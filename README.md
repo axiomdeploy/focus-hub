@@ -191,7 +191,7 @@ The result is an educational platform that doesn't just *tell* users about focus
 | 🌍 [Live Application](https://focus-hub-self.vercel.app/) | Visit the deployed web app |
 | 📚 [GitHub Repository](https://github.com/axiomdeploy/focus-hub) | View source code |
 | 👨‍💻 [Author's GitHub](https://github.com/axiomdeploy) | Meskat Alam's profile |
-| ✉️ [Email](mailto:axiom4zero@gmail.com) | Get in touch |
+| 💬 [Discord](https://discord.com/users/1496966372524167441) | Message me on Discord |
 
 ---
 
