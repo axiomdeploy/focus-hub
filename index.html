@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Focus Hub — Concentration Methods & Insights</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --accent: #c8f07a;
+    --accent2: #7af0c8;
+    --accent3: #f07ac8;
+    --text: #e8e8f0;
+    --muted: #6a6a82;
+    --border: rgba(200,240,122,0.12);
+    --glow: rgba(200,240,122,0.06);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: width 0.2s, height 0.2s, background 0.2s;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: all 0.15s ease;
+    opacity: 0.5;
+  }
+  body:hover .cursor { opacity: 1; }
+
+  /* Canvas */
+  #bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 200px;
+  }
+
+  /* Main content */
+  main {
+    position: relative;
+    z-index: 2;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 6rem 0 4rem;
+  }
+
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(3.5rem, 9vw, 7.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--accent);
+    display: block;
+  }
+
+  .hero-sub {
+    margin-top: 2.5rem;
+    font-size: 1.1rem;
+    color: var(--muted);
+    max-width: 480px;
+    line-height: 1.7;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+
+  .hero-scroll {
+    margin-top: 4rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    opacity: 0;
+    animation: fadeUp 0.8s 0.9s forwards;
+  }
+
+  .scroll-line {
+    width: 60px;
+    height: 1px;
+    background: var(--accent);
+    animation: expandLine 1.5s 1.2s ease forwards;
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+
+  @keyframes expandLine {
+    to { transform: scaleX(1); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Section headers */
+  .section {
+    padding: 6rem 0;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 3rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .section-label::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: var(--accent2);
+  }
+
+  /* CAUSES TABLE */
+  .causes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5px;
+    background: var(--border);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .cause-card {
+    background: var(--surface);
+    padding: 2rem 1.75rem;
+    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cause-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 0;
+    background: var(--card-color, var(--accent));
+    transition: height 0.4s ease;
+  }
+
+  .cause-card:hover { background: var(--surface2); }
+  .cause-card:hover::before { height: 100%; }
+
+  .cause-icon {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .cause-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--card-color, var(--accent));
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.02em;
+  }
+
+  .cause-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 1.2rem;
+  }
+
+  .cause-solution {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text);
+    background: rgba(255,255,255,0.04);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    line-height: 1.5;
+    border-left: 2px solid var(--card-color, var(--accent));
+  }
+
+  /* TECHNIQUES */
+  .techniques-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .technique {
+    background: var(--surface);
+    border-radius: 0;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .technique:first-child { border-radius: 14px 14px 0 0; }
+  .technique:last-child { border-radius: 0 0 14px 14px; border-bottom: none; }
+
+  .technique-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.8rem 2rem;
+    cursor: pointer;
+    transition: background 0.25s;
+    user-select: none;
+  }
+
+  .technique-header:hover { background: var(--surface2); }
+
+  .technique-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    min-width: 32px;
+  }
+
+  .technique-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    flex: 1;
+    color: var(--text);
+  }
+
+  .technique-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--glow);
+    color: var(--accent);
+    border: 1px solid var(--border);
+    letter-spacing: 0.1em;
+  }
+
+  .technique-arrow {
+    font-size: 0.9rem;
+    color: var(--muted);
+    transition: transform 0.3s;
+    margin-left: 0.5rem;
+  }
+
+  .technique.open .technique-arrow { transform: rotate(180deg); }
+
+  .technique-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+
+  .technique.open .technique-body { max-height: 600px; }
+
+  .technique-content {
+    padding: 0 2rem 2rem 2rem;
+    padding-left: calc(2rem + 32px + 1.5rem);
+  }
+
+  .step-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .step-list li {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .step-list li::before {
+    content: '→';
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .level-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--accent3);
+    background: rgba(240,122,200,0.08);
+    padding: 2px 7px;
+    border-radius: 4px;
+    border: 1px solid rgba(240,122,200,0.2);
+    margin-right: 6px;
+    vertical-align: middle;
+    letter-spacing: 0.08em;
+  }
+
+  /* KEY TAKEAWAYS */
+  .takeaways-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .takeaway {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.75rem;
+    position: relative;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .takeaway:hover {
+    border-color: rgba(200,240,122,0.35);
+    transform: translateY(-3px);
+  }
+
+  .takeaway-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3rem;
+    color: rgba(200,240,122,0.08);
+    position: absolute;
+    top: 0.75rem;
+    right: 1.25rem;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .takeaway p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .takeaway p strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* QUOTE */
+  .quote-section {
+    padding: 5rem 0;
+    text-align: center;
+  }
+
+  .big-quote {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    line-height: 1.3;
+    color: var(--text);
+    max-width: 750px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .big-quote em { color: var(--accent); font-style: italic; }
+
+  .quote-line {
+    width: 60px;
+    height: 2px;
+    background: var(--accent);
+    margin: 2.5rem auto;
+    border-radius: 2px;
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 2;
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  footer p {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  .footer-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  /* parallax wrapper */
+  .parallax-wrap {
+    will-change: transform;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .hero-title { font-size: 3rem; }
+    .technique-content { padding-left: 2rem; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<canvas id="bg-canvas"></canvas>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero parallax-wrap" data-speed="0.03">
+    <p class="hero-tag">Focus Research & Methods</p>
+    <h1 class="hero-title">
+      The Art of<br>
+      <em>Deep Focus</em>
+    </h1>
+    <p class="hero-sub">Concentration isn't a switch — it's a skill. Here's what actually works, backed by real experience.</p>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      Scroll to explore
+    </div>
+  </section>
+
+  <!-- CAUSES SECTION -->
+  <section class="section">
+    <p class="section-label">Why we lose focus</p>
+    <div class="causes-grid">
+
+      <div class="cause-card" style="--card-color: #c8f07a;">
+        <span class="cause-icon">🧠</span>
+        <p class="cause-name">Attention Fatigue</p>
+        <p class="cause-desc">Brain struggles to maintain focus after the initial 5–15 minutes. This is normal, not a flaw.</p>
+        <div class="cause-solution">Phone out of reach + quiet environment — create a dedicated focus setup before starting.</div>
+      </div>
+
+      <div class="cause-card" style="--card-color: #7af0c8;">
+        <span class="cause-icon">📱</span>
+        <p class="cause-name">Digital Distraction</p>
+        <p class="cause-desc">Constant interruptions from social media and short-form video erode your attention span over time.</p>
+        <div class="cause-solution">Switch to longer-form content (20+ min shows). Avoid TikTok, Reels — they're anti-focus training.</div>
+      </div>
+
+      <div class="cause-card" style="--card-color: #f0c87a;">
+        <span class="cause-icon">⚡</span>
+        <p class="cause-name">Physical Factors</p>
+        <p class="cause-desc">Blood sugar instability, caffeine issues, or simply not sleeping enough — the body limits the mind.</p>
+        <div class="cause-solution">Sleep, nutrition, and exercise aren't optional. They're the foundation everything else builds on.</div>
+      </div>
+
+      <div class="cause-card" style="--card-color: #f07ac8;">
+        <span class="cause-icon">💭</span>
+        <p class="cause-name">Mental State</p>
+        <p class="cause-desc">Stress, anxiety, or reactive thinking patterns keep the brain in "alert" mode, blocking deep work.</p>
+        <div class="cause-solution">Pen & paper for planning. Meditation or CBT techniques to quiet background mental noise.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TECHNIQUES SECTION -->
+  <section class="section">
+    <p class="section-label">Proven techniques</p>
+    <div class="techniques-stack">
+
+      <div class="technique" onclick="toggleTechnique(this)">
+        <div class="technique-header">
+          <span class="technique-num">01</span>
+          <span class="technique-name">The Parakeet Method</span>
+          <span class="technique-tag">Sensory Reset</span>
+          <span class="technique-arrow">↓</span>
+        </div>
+        <div class="technique-body">
+          <div class="technique-content">
+            <ul class="step-list">
+              <li><span><span class="level-badge">LVL 1</span>Turn off all lights. Put on noise-cancelling headphones. Cover your head with a blanket. Assume fetal position for 5 minutes. Full sensory withdrawal.</span></li>
+              <li><span><span class="level-badge">LVL 2</span>Add a weighted blanket on top. The added pressure activates the parasympathetic nervous system, signaling "rest mode."</span></li>
+              <li><span><span class="level-badge">LVL 3</span>Lie supine on the floor instead. Eyes open or closed. Optional: 10–15 light pushups to redirect physical restlessness.</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="technique" onclick="toggleTechnique(this)">
+        <div class="technique-header">
+          <span class="technique-num">02</span>
+          <span class="technique-name">Interruption Tracking System</span>
+          <span class="technique-tag">Awareness</span>
+          <span class="technique-arrow">↓</span>
+        </div>
+        <div class="technique-body">
+          <div class="technique-content">
+            <ul class="step-list">
+              <li>Take a sheet of lined paper and write "Interruptions" at the top as a column header.</li>
+              <li>Set a Pomodoro timer (25 mins recommended). Each time you feel the urge to get distracted, make a tally mark.</li>
+              <li>Cross off each interruption as it occurs — the act of writing it externalizes the urge, reducing its power.</li>
+              <li>Track session-to-session. Watching your tally count decrease over days is deeply motivating.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="technique" onclick="toggleTechnique(this)">
+        <div class="technique-header">
+          <span class="technique-num">03</span>
+          <span class="technique-name">The Focus Setup Routine</span>
+          <span class="technique-tag">Environment</span>
+          <span class="technique-arrow">↓</span>
+        </div>
+        <div class="technique-body">
+          <div class="technique-content">
+            <ul class="step-list">
+              <li>Prepare environment first: phone in another room, focus music on headphones, water or tea within reach.</li>
+              <li>Start with "brainless" warm-up activities: review your planner, organize your desk, re-read yesterday's notes.</li>
+              <li>Add a light stretching or yoga sequence (5–10 mins) to physically transition from "rest" to "work" mode.</li>
+              <li>The goal is to remove every possible friction point before the actual work begins.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- QUOTE BREAK -->
+  <div class="quote-section">
+    <div class="quote-line"></div>
+    <p class="big-quote">Focus isn't a switch you flip. It's a <em>momentum</em> you build — one distraction resisted at a time.</p>
+    <div class="quote-line"></div>
+  </div>
+
+  <!-- KEY TAKEAWAYS -->
+  <section class="section">
+    <p class="section-label">Key takeaways</p>
+    <div class="takeaways-grid">
+
+      <div class="takeaway">
+        <div class="takeaway-num">01</div>
+        <p><strong>5–15 minute struggle is normal.</strong> Focus builds like a flywheel — it needs initial energy before it spins on its own.</p>
+      </div>
+
+      <div class="takeaway">
+        <div class="takeaway-num">02</div>
+        <p><strong>Write down interruptions</strong> instead of acting on them. This alone can halve your distraction rate within a week.</p>
+      </div>
+
+      <div class="takeaway">
+        <div class="takeaway-num">03</div>
+        <p><strong>Physical health is non-negotiable.</strong> 15–20 minutes of exercise and proper nutrition are prerequisites, not luxuries.</p>
+      </div>
+
+      <div class="takeaway">
+        <div class="takeaway-num">04</div>
+        <p><strong>Be kind to yourself.</strong> Even partial progress counts. A 60% focus session beats a 0% one — always.</p>
+      </div>
+
+      <div class="takeaway">
+        <div class="takeaway-num">05</div>
+        <p><strong>Short-form scrolling is an anti-skill.</strong> TikTok and Reels actively train your brain against deep focus. Avoid them.</p>
+      </div>
+
+      <div class="takeaway">
+        <div class="takeaway-num">06</div>
+        <p><strong>Environment first, willpower second.</strong> A frictionless setup reduces how much mental energy focus even costs.</p>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>Focus Hub — Concentration Methods & Insights</p>
+  <div class="footer-dot"></div>
+  <p>Meskat Alam</p>
+</footer>
+
+<!-- Three.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ─── Custom cursor ───────────────────────────────────────
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+});
+
+function animRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top = ry + 'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+
+// Cursor on interactive elements
+document.querySelectorAll('a, button, .technique-header, .cause-card, .takeaway').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.width = '20px';
+    cursor.style.height = '20px';
+    ring.style.width = '48px';
+    ring.style.height = '48px';
+    ring.style.opacity = '0.8';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.width = '12px';
+    cursor.style.height = '12px';
+    ring.style.width = '36px';
+    ring.style.height = '36px';
+    ring.style.opacity = '0.5';
+  });
+});
+
+// ─── Three.js Background ─────────────────────────────────
+const canvas = document.getElementById('bg-canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.z = 5;
+
+// Floating particles
+const particleCount = 1800;
+const geometry = new THREE.BufferGeometry();
+const positions = new Float32Array(particleCount * 3);
+const colors = new Float32Array(particleCount * 3);
+
+const palette = [
+  [0.784, 0.941, 0.478],  // accent green
+  [0.478, 0.941, 0.784],  // teal
+  [0.941, 0.478, 0.784],  // pink
+  [0.3, 0.3, 0.45],       // dark
+];
+
+for (let i = 0; i < particleCount; i++) {
+  positions[i*3]   = (Math.random() - 0.5) * 30;
+  positions[i*3+1] = (Math.random() - 0.5) * 20;
+  positions[i*3+2] = (Math.random() - 0.5) * 15;
+
+  const col = palette[Math.floor(Math.random() * palette.length)];
+  colors[i*3]   = col[0];
+  colors[i*3+1] = col[1];
+  colors[i*3+2] = col[2];
+}
+
+geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+const material = new THREE.PointsMaterial({
+  size: 0.035,
+  vertexColors: true,
+  transparent: true,
+  opacity: 0.7,
+  sizeAttenuation: true,
+});
+
+const particles = new THREE.Points(geometry, material);
+scene.add(particles);
+
+// Grid lines
+const gridMat = new THREE.LineBasicMaterial({
+  color: 0xc8f07a,
+  transparent: true,
+  opacity: 0.04
+});
+
+for (let i = -10; i <= 10; i += 2) {
+  const hGeo = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(-20, i, -3),
+    new THREE.Vector3(20, i, -3)
+  ]);
+  const vGeo = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(i * 1.5, -15, -3),
+    new THREE.Vector3(i * 1.5, 15, -3)
+  ]);
+  scene.add(new THREE.Line(hGeo, gridMat));
+  scene.add(new THREE.Line(vGeo, gridMat));
+}
+
+// Mouse reactive
+let targetX = 0, targetY = 0, currentX = 0, currentY = 0;
+
+document.addEventListener('mousemove', e => {
+  targetX = (e.clientX / window.innerWidth - 0.5) * 2;
+  targetY = (e.clientY / window.innerHeight - 0.5) * 2;
+});
+
+// Scroll parallax for sections
+const parallaxEls = document.querySelectorAll('.parallax-wrap');
+
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  parallaxEls.forEach(el => {
+    const speed = parseFloat(el.dataset.speed || 0.05);
+    el.style.transform = `translateY(${scrollY * speed}px)`;
+  });
+});
+
+// Resize
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Animate
+let time = 0;
+function animate() {
+  requestAnimationFrame(animate);
+  time += 0.003;
+
+  currentX += (targetX - currentX) * 0.04;
+  currentY += (targetY - currentY) * 0.04;
+
+  particles.rotation.y = time * 0.05 + currentX * 0.3;
+  particles.rotation.x = currentY * 0.15;
+
+  camera.position.x = currentX * 0.5;
+  camera.position.y = -currentY * 0.3;
+  camera.lookAt(scene.position);
+
+  // Subtle breathing
+  const s = 1 + Math.sin(time * 0.8) * 0.005;
+  particles.scale.set(s, s, s);
+
+  renderer.render(scene, camera);
+}
+animate();
+
+// ─── Accordion ───────────────────────────────────────────
+function toggleTechnique(el) {
+  const isOpen = el.classList.contains('open');
+  document.querySelectorAll('.technique').forEach(t => t.classList.remove('open'));
+  if (!isOpen) el.classList.add('open');
+}
+
+// Open first by default
+document.querySelector('.technique').classList.add('open');
+
+// ─── Scroll reveal ───────────────────────────────────────
+const reveals = document.querySelectorAll('.cause-card, .takeaway, .technique');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }, i * 80);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+reveals.forEach((el, i) => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
