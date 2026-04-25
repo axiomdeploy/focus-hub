@@ -113,7 +113,7 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 Focus Hub is created and maintained by **Meskat Alam**.  
 ### Social Links:  
 - 💼 [GitHub](https://github.com/axiomdeploy)  
-- ✉️ Contact: meskatalam@example.com  
+- ✉️ Contact: meskatchoudhury@gmail.com
 
 --- 
 
