@@ -227,7 +227,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 
 ### Connect:
 - 🔗 **GitHub**: [@axiomdeploy](https://github.com/axiomdeploy)
-- 📧 **Email**: axiom4zero@gmail.com
+- 💬 **Discord**: [Message me](https://discord.com/users/1496966372524167441)
 - 💼 **Portfolio**: [axiomdeploy.github.io](https://axiomdeploy.github.io)
 
 ---
